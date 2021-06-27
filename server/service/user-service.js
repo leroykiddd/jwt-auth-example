@@ -18,7 +18,7 @@ class UserService {
         const acticationLink = uuid.v4()
         
         const user = await userModel.create({email, password: hashPassword})
-        await mailService.sendActicationMail(email, acticationLink)
+        await mailService.sendActicationMail(email, `${process.env.API_URL}/api/acticate/${acticationLink}`)
 
         const userDto = new UserDto(user)
         const tokens = tokenService.generateTokens({...UserDto})
