@@ -1,7 +1,7 @@
 const userModel = require('../models/user-model')
 const bcrypt = require('bcrypt') 
 const uuid = require('uuid')
-const mailService = require('./mail-service ')
+const mailService = require('./mail-service')
 const tokenService = require('./token-service')
 const UserDto = require('../dtos/user-dto')
 
@@ -16,9 +16,9 @@ class UserService {
 
         const hashPassword = await bcrypt.hash(password, 3)
         const acticationLink = uuid.v4()
-         
+        
         const user = await userModel.create({email, password: hashPassword})
-        await mailдService.sendActicationMail(email, acticationLink)
+        await mailService.sendActicationMail(email, acticationLink)
 
         const userDto = new UserDto(user)
         const tokens = tokenService.generateTokens({...UserDto})
