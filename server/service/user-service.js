@@ -15,16 +15,25 @@ class UserService {
         }
 
         const hashPassword = await bcrypt.hash(password, 3)
-        const acticationLink = uuid.v4()
+        const activationLink = uuid.v4()
         
-        const user = await userModel.create({email, password: hashPassword})
-        await mailService.sendActicationMail(email, `${process.env.API_URL}/api/acticate/${acticationLink}`)
+        const user = await userModel.create({email, password: hashPassword, activationLink})
+        await mailService.sendActicationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`)
 
         const userDto = new UserDto(user)
         const tokens = tokenService.generateTokens({...UserDto})
         await tokenService.saveToken(userDto.id, tokens.refreshToken)
 
         return { ...tokens, user: userDto }
+    }
+
+    async activate(activationLink) {
+        const user = await userModel.findOne({activationLink})
+        if (!user) {
+            throw Error('Неккоректная ссылка активации')
+        }
+        user.isActivated = true;
+        await user.save();
     }
 }
 
